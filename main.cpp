@@ -11,25 +11,25 @@ int ChangeAcc(string szTestString_temp)
     char szTestString[n + 1];
     strcpy(szTestString, szTestString_temp.c_str());
 
-    // ГЉГ«ГѕГ· ГЄГ®ГІГ®Г°Г»Г© ГЎГіГ¤ГҐГ¬ Г±Г®Г§Г¤Г ГўГ ГІГј
+    // Ключ который будем создавать
     char szPath[] = ("Software\\Valve\\Steam");
 
     HKEY hKey;
 
-    // Г‘Г®Г§Г¤Г ГҐГ¬ ГЄГ«ГѕГ· Гў ГўГҐГІГЄГҐ HKEY_CURRENT_USER
+    // Создаем ключ в ветке HKEY_CURRENT_USER
     if((RegCreateKeyEx(HKEY_CURRENT_USER, szPath, 0, NULL, REG_OPTION_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))){
-    cout << "ГЏГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ ГЄГ«ГѕГ·Г  ГЇГ°Г®ГЁГ§Г®ГёГ«Г  Г®ГёГЁГЎГЄГ " << endl;
+    cout << "При создании ключа произошла ошибка" << endl;
     return 1;
     }
-    // ГЏГЁГёГҐГ¬ ГІГҐГ±ГІГ®ГўГіГѕ Г±ГІГ°Г®ГЄГі Гў Г±Г®Г§Г¤Г Г­Г­Г»Г© ГЄГ«ГѕГ·
+    // Пишем тестовую строку в созданный ключ
     if(RegSetValueEx(hKey, "AutoLoginUser", 0, REG_SZ, (BYTE*)szTestString, sizeof(szTestString))){
-    cout << "ГЏГ°ГЁ Г§Г ГЇГЁГ±ГЁ Г±ГІГ°Г®ГЄГЁ ГЇГ°Г®ГЁГ§Г®ГёГ«Г  Г®ГёГЁГЎГЄГ " << endl;
+    cout << "При записи строки произошла ошибка" << endl;
     return 2;
     }
 
-    // Г‡Г ГЄГ°Г»ГўГ ГҐГ¬ Г®ГЇГЁГ±Г ГІГҐГ«Гј ГЄГ«ГѕГ·Г 
+    // Закрываем описатель ключа
     if(RegCloseKey(hKey) != ERROR_SUCCESS){
-    cout << "ГЏГ°ГЁ Г§Г ГЄГ°Г»ГІГЁГЁ ГЄГ«ГѕГ·Г  ГЇГ°Г®ГЁГ§Г®ГёГ«Г  Г®ГёГЁГЎГЄГ " << endl;
+    cout << "При закрытии ключа произошла ошибка" << endl;
     return 3;
     };
 
@@ -37,25 +37,25 @@ int ChangeAcc(string szTestString_temp)
     DWORD dwBufLen = MAX_PATH;
 
     if(RegGetValue(HKEY_CURRENT_USER, szPath, "AutoLoginUser", RRF_RT_REG_SZ, NULL, (BYTE*) szBuf, &dwBufLen) != ERROR_SUCCESS){
-    cout << "ГЏГ°ГЁ Г·ГІГҐГ­ГЁГЁ Г±ГІГ°Г®ГЄГЁ ГЇГ°Г®ГЁГ§Г®ГёГ«Г  Г®ГёГЁГЎГЄГ " << endl;
+    cout << "При чтении строки произошла ошибка" << endl;
     return 4;
     }
-    cout << "Г’ГҐГЄГіГ№ГЁГ© Г«Г®ГЈГЁГ­: " << szBuf << endl;
+    cout << "Текущий логин: " << szBuf << endl;
 }
 
 
 int main()
 {
-    // Г“Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ Г°ГіГ±Г±ГЄГіГѕ ГЄГ®Г¤Г®ГўГіГѕ Г±ГІГ°Г Г­ГЁГ¶Гі Г¤Г«Гї ГўГ»ГўГ®Г¤Г  ГЄГЁГ°ГЁГ«Г«ГЁГ¶Г»
+    // Устанавливаем русскую кодовую страницу для вывода кириллицы
     setlocale(LC_ALL, "Rus");
-    // Г‘ГІГ°Г®ГЄГ  ГЄГ®ГІГ®Г°ГіГѕ ГЎГіГ¤ГҐГ¬ ГЇГЁГ±Г ГІГј Гў Г°ГҐГҐГ±ГІГ°
+    // Строка которую будем писать в реестр
 
     string line;
-    ifstream file("login.txt"); // Г®ГЄГ°Г»ГўГ ГҐГ¬ ГґГ Г©Г« Г¤Г«Гї Г·ГІГҐГ­ГЁГї
+    ifstream file("login.txt"); // окрываем файл для чтения
     if (file.is_open())
     {
         int i = 0;
-        cout << "ГЂГЄГЄГ ГіГ­ГІ: " << endl;
+        cout << "Аккаунт: " << endl;
         while (getline(file, line))
         {
             i++;
@@ -64,13 +64,13 @@ int main()
     }
     else
     {
-        cout << "ГЌГҐ ГЎГ»Г« Г­Г Г©Г¤ГҐГ­ ГґГ Г©Г« login.txt, Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® Г±Г®Г§Г¤Г ГІГј ГґГ Г©Г« login.txt Г°ГїГ¤Г®Г¬ Г± ГЁГ±ГЇГ®Г«Г­ГїГҐГ¬Г»Г¬ ГґГ Г©Г«Г®Г¬ ГЁ ГўГ­ГҐГ±ГІГЁ ГІГіГ¤Г  Г±ГўГ®ГЁ Г«Г®ГЈГЁГ­Г», 1 Г«Г®ГЈГЁГ­ Г­Г  1 Г±ГІГ°Г®Г·ГЄГҐ. ГЏГ°ГЁГ¬ГҐГ°(Г«Г®ГЈГЁГ­Г®Гў Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј ГЎГ®Г«ГјГёГҐ Г·ГҐГ¬ 2): " << endl << "login_1\nlogin_2" << endl;
-        cout << "Г”Г Г©Г« Г± ГЇГ°ГЁГ¬ГҐГ°Г®Г¬ ГЎГ»Г« Г±Г®Г§Г¤Г Г­, Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® Г§Г Г¬ГҐГ­ГЁГІГј Г«Г®ГЈГЁГ­Г» Г­Г  Г±ГўГ®ГЁ." << endl;
+        cout << "Не был найден файл login.txt, необходимо создать файл login.txt рядом с исполняемым файлом и внести туда свои логины, 1 логин на 1 строчке. Пример(логинов может быть больше чем 2): " << endl << "login_1\nlogin_2" << endl;
+        cout << "Файл с примером был создан, необходимо заменить логины на свои." << endl;
 
         ofstream fout("login.txt");
-        fout << "login_1" << endl; // Г§Г ГЇГЁГ±Гј Г±ГІГ°Г®ГЄГЁ Гў ГґГ Г©Г«
-        fout << "login_2" << endl; // Г§Г ГЇГЁГ±Гј Г±ГІГ°Г®ГЄГЁ Гў ГґГ Г©Г«
-        fout.close(); // Г§Г ГЄГ°Г»ГўГ ГҐГ¬ ГґГ Г©Г«
+        fout << "login_1" << endl; // запись строки в файл
+        fout << "login_2" << endl; // запись строки в файл
+        fout.close(); // закрываем файл
         system("pause");
         return 0;
     }
@@ -86,17 +86,17 @@ int main()
         {
             getline(file, line);
         }
-        cout << "Г‚Г»ГЎГ°Г Г­Г­Г»Г© Г ГЄГЄГ ГіГ­ГІ - " << line << endl;
+        cout << "Выбранный аккаунт - " << line << endl;
     }
     file.close();
     ChangeAcc(line);
-    cout << "Г‡Г ГўГҐГ°ГёГ Гѕ Г±ГІГЁГ¬..." << endl;
+    cout << "Завершаю стим..." << endl;
     system("taskkill /f /t /im steam.exe");
-    cout << "10 Г±ГҐГЄ ГЇГ ГіГ§Г ..." << endl;
+    cout << "10 сек пауза..." << endl;
     Sleep(10000);
-    cout << "Г‡Г ГЇГіГ±ГЄ Г±ГІГЁГ¬Г  ГЁГ§ C:\\Program Files (x86)\\Steam (ГҐГ±Г«ГЁ Г±ГІГЁГ¬ Г­Г ГµГ®Г¤ГЁГІГ±Гї Г­ГҐ Гў ГЅГІГ®Г© ГЇГ ГЇГЄГҐ, Г§Г ГЇГіГ±ГЄГ  Г­ГҐ ГЇГ°Г®ГЁГ§Г®Г©Г¤ГҐГІ)" << endl;
+    cout << "Запуск стима из C:\\Program Files (x86)\\Steam (если стим находится не в этой папке, запуска не произойдет)" << endl;
     system("start \"Steam.exe\" \"C:\\Program Files (x86)\\Steam\\Steam.exe\"");
-    cout << "ГЉГ®Г­Г±Г®Г«Гј Г§Г ГЄГ°Г®ГҐГІГ±Гї Г·ГҐГ°ГҐГ§ 5 Г±ГҐГЄГіГ­Г¤" << endl;
+    cout << "Консоль закроется через 5 секунд" << endl;
     Sleep(5000);
 
     return 0;
