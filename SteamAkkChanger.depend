@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1611173524 source:c:\users\igorek\rep\codeblock\proj\steamakkchanger\main.cpp
-	<iostream>
-	<Windows.h>
-	<string>
-	<fstream>
-
