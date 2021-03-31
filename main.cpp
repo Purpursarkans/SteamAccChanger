@@ -11,25 +11,25 @@ int ChangeAcc(string szTestString_temp)
     char szTestString[n + 1];
     strcpy(szTestString, szTestString_temp.c_str());
 
-    // Ключ который будем создавать
+    // РљР»СЋС‡ РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµРј СЃРѕР·РґР°РІР°С‚СЊ
     char szPath[] = ("Software\\Valve\\Steam");
 
     HKEY hKey;
 
-    // Создаем ключ в ветке HKEY_CURRENT_USER
+    // РЎРѕР·РґР°РµРј РєР»СЋС‡ РІ РІРµС‚РєРµ HKEY_CURRENT_USER
     if((RegCreateKeyEx(HKEY_CURRENT_USER, szPath, 0, NULL, REG_OPTION_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))){
-    cout << "При создании ключа произошла ошибка" << endl;
+    cout << "РџСЂРё СЃРѕР·РґР°РЅРёРё РєР»СЋС‡Р° РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°" << endl;
     return 1;
     }
-    // Пишем тестовую строку в созданный ключ
+    // РџРёС€РµРј С‚РµСЃС‚РѕРІСѓСЋ СЃС‚СЂРѕРєСѓ РІ СЃРѕР·РґР°РЅРЅС‹Р№ РєР»СЋС‡
     if(RegSetValueEx(hKey, "AutoLoginUser", 0, REG_SZ, (BYTE*)szTestString, sizeof(szTestString))){
-    cout << "При записи строки произошла ошибка" << endl;
+    cout << "РџСЂРё Р·Р°РїРёСЃРё СЃС‚СЂРѕРєРё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°" << endl;
     return 2;
     }
 
-    // Закрываем описатель ключа
+    // Р—Р°РєСЂС‹РІР°РµРј РѕРїРёСЃР°С‚РµР»СЊ РєР»СЋС‡Р°
     if(RegCloseKey(hKey) != ERROR_SUCCESS){
-    cout << "При закрытии ключа произошла ошибка" << endl;
+    cout << "РџСЂРё Р·Р°РєСЂС‹С‚РёРё РєР»СЋС‡Р° РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°" << endl;
     return 3;
     };
 
@@ -37,25 +37,27 @@ int ChangeAcc(string szTestString_temp)
     DWORD dwBufLen = MAX_PATH;
 
     if(RegGetValue(HKEY_CURRENT_USER, szPath, "AutoLoginUser", RRF_RT_REG_SZ, NULL, (BYTE*) szBuf, &dwBufLen) != ERROR_SUCCESS){
-    cout << "При чтении строки произошла ошибка" << endl;
+    cout << "РџСЂРё С‡С‚РµРЅРёРё СЃС‚СЂРѕРєРё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°" << endl;
     return 4;
     }
-    cout << "Текущий логин: " << szBuf << endl;
+    cout << "РўРµРєСѓС‰РёР№ Р»РѕРіРёРЅ: " << szBuf << endl;
 }
 
 
 int main()
 {
-    // Устанавливаем русскую кодовую страницу для вывода кириллицы
-    setlocale(LC_ALL, "Rus");
-    // Строка которую будем писать в реестр
+    system("chcp 65001");
+    system("clear");
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂСѓСЃСЃРєСѓСЋ РєРѕРґРѕРІСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ РґР»СЏ РІС‹РІРѕРґР° РєРёСЂРёР»Р»РёС†С‹
+    //setlocale(LC_ALL, "Rus");
+    // РЎС‚СЂРѕРєР° РєРѕС‚РѕСЂСѓСЋ Р±СѓРґРµРј РїРёСЃР°С‚СЊ РІ СЂРµРµСЃС‚СЂ
 
     string line;
-    ifstream file("login.txt"); // окрываем файл для чтения
+    ifstream file("login.txt"); // РѕРєСЂС‹РІР°РµРј С„Р°Р№Р» РґР»СЏ С‡С‚РµРЅРёСЏ
     if (file.is_open())
     {
         int i = 0;
-        cout << "Аккаунт: " << endl;
+        cout << "РђРєРєР°СѓРЅС‚: " << endl;
         while (getline(file, line))
         {
             i++;
@@ -64,13 +66,13 @@ int main()
     }
     else
     {
-        cout << "Не был найден файл login.txt, необходимо создать файл login.txt рядом с исполняемым файлом и внести туда свои логины, 1 логин на 1 строчке. Пример(логинов может быть больше чем 2): " << endl << "login_1\nlogin_2" << endl;
-        cout << "Файл с примером был создан, необходимо заменить логины на свои." << endl;
+        cout << "РќРµ Р±С‹Р» РЅР°Р№РґРµРЅ С„Р°Р№Р» login.txt, РЅРµРѕР±С…РѕРґРёРјРѕ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р» login.txt СЂСЏРґРѕРј СЃ РёСЃРїРѕР»РЅСЏРµРјС‹Рј С„Р°Р№Р»РѕРј Рё РІРЅРµСЃС‚Рё С‚СѓРґР° СЃРІРѕРё Р»РѕРіРёРЅС‹, 1 Р»РѕРіРёРЅ РЅР° 1 СЃС‚СЂРѕС‡РєРµ. РџСЂРёРјРµСЂ(Р»РѕРіРёРЅРѕРІ РјРѕР¶РµС‚ Р±С‹С‚СЊ Р±РѕР»СЊС€Рµ С‡РµРј 2): " << endl << "login_1\nlogin_2" << endl;
+        cout << "Р¤Р°Р№Р» СЃ РїСЂРёРјРµСЂРѕРј Р±С‹Р» СЃРѕР·РґР°РЅ, РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°РјРµРЅРёС‚СЊ Р»РѕРіРёРЅС‹ РЅР° СЃРІРѕРё." << endl;
 
         ofstream fout("login.txt");
-        fout << "login_1" << endl; // запись строки в файл
-        fout << "login_2" << endl; // запись строки в файл
-        fout.close(); // закрываем файл
+        fout << "login_1" << endl; // Р·Р°РїРёСЃСЊ СЃС‚СЂРѕРєРё РІ С„Р°Р№Р»
+        fout << "login_2" << endl; // Р·Р°РїРёСЃСЊ СЃС‚СЂРѕРєРё РІ С„Р°Р№Р»
+        fout.close(); // Р·Р°РєСЂС‹РІР°РµРј С„Р°Р№Р»
         system("pause");
         return 0;
     }
@@ -86,17 +88,18 @@ int main()
         {
             getline(file, line);
         }
-        cout << "Выбранный аккаунт - " << line << endl;
+        cout << "Р’С‹Р±СЂР°РЅРЅС‹Р№ Р°РєРєР°СѓРЅС‚ - " << line << endl;
     }
     file.close();
     ChangeAcc(line);
-    cout << "Завершаю стим..." << endl;
+    cout << "Р—Р°РІРµСЂС€Р°СЋ СЃС‚РёРј..." << endl;
     system("taskkill /f /t /im steam.exe");
-    cout << "10 сек пауза..." << endl;
+    cout << "10 СЃРµРє РїР°СѓР·Р°..." << endl;
     Sleep(10000);
-    cout << "Запуск стима из C:\\Program Files (x86)\\Steam (если стим находится не в этой папке, запуска не произойдет)" << endl;
+    cout << "Р—Р°РїСѓСЃРє СЃС‚РёРјР° РёР· C:\\Program Files (x86)\\Steam (РµСЃР»Рё СЃС‚РёРј РЅР°С…РѕРґРёС‚СЃСЏ РЅРµ РІ СЌС‚РѕР№ РїР°РїРєРµ, Р·Р°РїСѓСЃРєР° РЅРµ РїСЂРѕРёР·РѕР№РґРµС‚)" << endl;
     system("start \"Steam.exe\" \"C:\\Program Files (x86)\\Steam\\Steam.exe\"");
-    cout << "Консоль закроется через 5 секунд" << endl;
+    ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
+    cout << "РљРѕРЅСЃРѕР»СЊ Р·Р°РєСЂРѕРµС‚СЃСЏ С‡РµСЂРµР· 5 СЃРµРєСѓРЅРґ" << endl;
     Sleep(5000);
 
     return 0;
