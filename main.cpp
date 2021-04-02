@@ -2,8 +2,49 @@
 #include <Windows.h>
 #include <string>
 #include <fstream>
+#include <tlhelp32.h>
 
 using namespace std;
+
+void KillSteam()
+{
+    system("taskkill /f /t /im steam.exe");
+}
+void KillSteamExtreme()
+{
+    system("taskkill /f /t /im steam.exe");
+    system("taskkill /f /t /im steamwebhelper.exe");
+    system("taskkill /f /t /im SteamService.exe");
+}
+
+DWORD GetProcessByExeName(wchar_t* ExeName)
+{
+PROCESSENTRY32W pe32;
+pe32.dwSize = sizeof(PROCESSENTRY32W);
+
+HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
+if (hProcessSnap == INVALID_HANDLE_VALUE)
+{
+    MessageBoxW(NULL, L"Error CreateToolhelp32Snapshot", L"error", MB_OK);
+    return false;
+}
+
+if (Process32FirstW(hProcessSnap, &pe32))
+{
+    do
+    {
+        if (_wcsicmp(pe32.szExeFile, ExeName) == 0)
+        {
+            CloseHandle(hProcessSnap);
+            return pe32.th32ProcessID;
+        }
+    } while (Process32NextW(hProcessSnap, &pe32));
+}
+
+CloseHandle(hProcessSnap);
+return 0;
+
+}
 
 int ChangeAcc(string szTestString_temp)
 {
@@ -47,10 +88,7 @@ int ChangeAcc(string szTestString_temp)
 int main()
 {
     system("chcp 65001");
-    system("cls");
-    // Устанавливаем русскую кодовую страницу для вывода кириллицы
-    //setlocale(LC_ALL, "Rus");
-    // Строка которую будем писать в реестр
+    system("cls || clear");
 
     string line;
     ifstream file("login.txt"); // окрываем файл для чтения
@@ -92,15 +130,40 @@ int main()
     }
     file.close();
     ChangeAcc(line);
-    cout << "Завершаю стим..." << endl;
-    system("taskkill /f /t /im steam.exe");
-    cout << "10 сек пауза..." << endl;
-    Sleep(10000);
+
+    int timerS = 0;
+    int timerT = 0;
+
+    if (GetProcessByExeName(L"steam.exe") != 0)
+    {
+        cout << "Найден запущенный стим" << endl;
+        cout << "Завершение стима" << endl;
+        KillSteam();
+
+        while((GetProcessByExeName(L"steam.exe") != 0) && (GetProcessByExeName(L"steamwebhelper.exe") != 0) && (GetProcessByExeName(L"SteamService.exe") != 0))
+        {
+            timerS++;
+            if(timerS > 100)
+            {
+                cout << "Стим завершается слишком долго... Повторная попытка закрытия стима" << endl;
+                KillSteamExtreme();
+                timerS = 0;
+                timerT++;
+            }
+            if(timerT > 10)
+            {
+                cout << "Стим не может закрыться слишком долго, попробуйте закрыть его вручную.\nЕсли стим закрыт, но ничего не происходит - отставьте багрепорт на\n>>> github.com/Purpursarkans/SteamAccChanger/issues\nИли свяжитесь со мной на прямую\n>>> t.me/Purpursarkans" << endl << endl;
+            }
+            Sleep(10);
+        }
+    }
+
     cout << "Запуск стима из C:\\Program Files (x86)\\Steam (если стим находится не в этой папке, запуска не произойдет)" << endl;
     system("start \"Steam.exe\" \"C:\\Program Files (x86)\\Steam\\Steam.exe\"");
     ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
-    cout << "Консоль закроется через 5 секунд" << endl;
-    Sleep(5000);
+    cout << "Консоль закроется через 3 секунды" << endl;
+    Sleep(3000);
+
 
     return 0;
 }
