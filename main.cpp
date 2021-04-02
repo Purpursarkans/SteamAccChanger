@@ -47,7 +47,7 @@ int ChangeAcc(string szTestString_temp)
 int main()
 {
     system("chcp 65001");
-    system("clear");
+    system("cls");
     // Устанавливаем русскую кодовую страницу для вывода кириллицы
     //setlocale(LC_ALL, "Rus");
     // Строка которую будем писать в реестр
