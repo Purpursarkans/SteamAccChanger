@@ -139,6 +139,7 @@ int main()
         system("pause");
         return 0;
     }
+
     int i;
     cout << ">> ";
     cin >> i;
