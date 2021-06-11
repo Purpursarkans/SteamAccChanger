@@ -6,15 +6,40 @@
 
 using namespace std;
 
+void killProcessByName(const char *filename);
+
 void KillSteam()
 {
-    system("taskkill /f /t /im steam.exe");
+    killProcessByName("steam.exe");
 }
 void KillSteamExtreme()
 {
-    system("taskkill /f /t /im steam.exe");
-    system("taskkill /f /t /im steamwebhelper.exe");
-    system("taskkill /f /t /im SteamService.exe");
+    killProcessByName("steam.exe");
+    killProcessByName("steamwebhelper.exe");
+    killProcessByName("SteamService.exe");
+}
+
+void killProcessByName(const char *filename)
+{
+    HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
+    PROCESSENTRY32 pEntry;
+    pEntry.dwSize = sizeof (pEntry);
+    BOOL hRes = Process32First(hSnapShot, &pEntry);
+    while (hRes)
+    {
+        if (strcmp(pEntry.szExeFile, filename) == 0)
+        {
+            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, 0,
+                                          (DWORD) pEntry.th32ProcessID);
+            if (hProcess != NULL)
+            {
+                TerminateProcess(hProcess, 9);
+                CloseHandle(hProcess);
+            }
+        }
+        hRes = Process32Next(hSnapShot, &pEntry);
+    }
+    CloseHandle(hSnapShot);
 }
 
 DWORD GetProcessByExeName(wchar_t* ExeName)
@@ -131,7 +156,6 @@ int main()
     file.close();
     ChangeAcc(line);
 
-    int timerS = 0;
     int timerT = 0;
 
     if (GetProcessByExeName(L"steam.exe") != 0)
@@ -140,26 +164,27 @@ int main()
         cout << "Завершение стима" << endl;
         KillSteam();
 
-        while((GetProcessByExeName(L"steam.exe") != 0) && (GetProcessByExeName(L"steamwebhelper.exe") != 0) && (GetProcessByExeName(L"SteamService.exe") != 0))
+        Sleep(3000);
+
+        while((GetProcessByExeName(L"steam.exe") != 0) || (GetProcessByExeName(L"steamwebhelper.exe") != 0) || (GetProcessByExeName(L"SteamService.exe") != 0))
         {
-            timerS++;
-            if(timerS > 100)
-            {
-                cout << "Стим завершается слишком долго... Повторная попытка закрытия стима" << endl;
-                KillSteamExtreme();
-                timerS = 0;
-                timerT++;
-            }
+
+            cout << "Стим завершается слишком долго... Повторная попытка закрытия стима" << endl;
+            KillSteamExtreme();
+            timerT++;
             if(timerT > 10)
             {
-                cout << "Стим не может закрыться слишком долго, попробуйте закрыть его вручную.\nЕсли стим закрыт, но ничего не происходит - отставьте багрепорт на\n>>> github.com/Purpursarkans/SteamAccChanger/issues\nИли свяжитесь со мной на прямую\n>>> t.me/Purpursarkans" << endl << endl;
+                cout << "Стим не может закрыться слишком долго, попробуйте закрыть его вручную.\nЕсли стим закрыт, но ничего не происходит - отставьте багрепорт с указанием незакрытых служб стима на\n>>> github.com/Purpursarkans/SteamAccChanger/issues" << endl << endl;
+                system("pause");
+                return 0;
             }
-            Sleep(10);
+            Sleep(1000);
         }
     }
 
     cout << "Запуск стима из C:\\Program Files (x86)\\Steam (если стим находится не в этой папке, запуска не произойдет)" << endl;
     system("start \"Steam.exe\" \"C:\\Program Files (x86)\\Steam\\Steam.exe\"");
+    Sleep(3000);
     ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
     cout << "Консоль закроется через 3 секунды" << endl;
     Sleep(3000);
