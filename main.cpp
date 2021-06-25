@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <tlhelp32.h>
+#include <cstdio>
 
 using namespace std;
 
@@ -120,6 +121,7 @@ int main()
     if (file.is_open())
     {
         int i = 0;
+        cout << "0 - Настройки" << endl;
         cout << "Аккаунт: " << endl;
         while (getline(file, line))
         {
@@ -129,22 +131,118 @@ int main()
     }
     else
     {
-        cout << "Не был найден файл login.txt, необходимо создать файл login.txt рядом с исполняемым файлом и внести туда свои логины, 1 логин на 1 строчке. Пример(логинов может быть больше чем 2): " << endl << "login_1\nlogin_2" << endl;
-        cout << "Файл с примером был создан, необходимо заменить логины на свои." << endl;
+        cout << "Не был найден файл login.txt, создание файла рядом с программой" << endl
+             << "Необходимо добавить логины через настройки" << endl;
 
         ofstream fout("login.txt");
-        fout << "login_1" << endl; // запись строки в файл
-        fout << "login_2" << endl; // запись строки в файл
-        fout.close(); // закрываем файл
+        fout << "template login" << endl;
+        fout.close();
         system("pause");
-        return 0;
+        main();
     }
+    file.close();
+
 
     int i;
     cout << ">> ";
     cin >> i;
 
-    file.close();
+    if (i == 0)
+    {
+        system("cls");
+        cout << "Настройки:" << endl;
+        cout << "1 - Добавить аккаунт" << endl;
+        cout << "2 - Удалить аккаунт" << endl;
+        cout << ">> ";
+        cin >> i;
+
+        if(i == 1)
+        {
+            ofstream fout("login.txt", ios_base::app);
+            system("cls");
+            string acc;
+            cout << "Добавление аккаунта:" << endl;
+            cout << "Введите логин аккаунта:" << endl;
+            cout << ">> ";
+            cin >> acc;
+            if(!(fout << acc << endl))
+            {
+                cout << "Ошибка добавления логина" << endl;
+                system("pause");
+                fout.close();
+            }
+
+            cout << "Добавлен аккаунт: " << acc << endl;
+            fout.close();
+        }
+        else if (i == 2)
+        {
+            system("cls");
+            cout << "Удаление аккаунта:" << endl;
+
+            string acc;
+            string delacc;
+            int accdel;
+
+
+            file.open("login.txt");
+
+            for (int chetchik = 1; getline(file, acc); chetchik++)
+            {
+                cout << chetchik << " - " << acc << endl;
+            }
+            file.close();
+
+            file.open("login.txt");
+
+            cout << ">> ";
+            cin >> accdel;
+
+            for(int j = 0; j < accdel; j++)
+            {
+                getline(file, delacc);
+            }
+            file.close();
+
+            file.open("login.txt");
+            ofstream fout("login2.txt");
+
+            for (int chetchik = 1; getline(file, acc); chetchik++)
+            {
+                if(chetchik == accdel) { continue; }
+                fout << acc << endl;
+            }
+
+            file.close();
+            fout.close();
+
+            fout.open("login.txt");
+            file.open("login2.txt");
+
+            for (int chetchik = 1; getline(file, acc); chetchik++)
+            {
+                fout << acc << endl;
+            }
+
+            file.close();
+            fout.close();
+
+            cout << "Удален аккаунт: " << delacc << endl;
+
+            if(!(remove( "login2.txt" )))
+            {
+                cout << "Ошибка удаления файла" << endl;
+            }
+
+            else
+            {
+                cout << "Файл успешно удалён" << endl;
+            }
+        }
+        main();
+    }
+
+
     file.open("login.txt");
     if (file.is_open())
     {
