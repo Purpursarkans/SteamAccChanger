@@ -151,20 +151,32 @@ int main()
     {
         system("cls");
         cout << "Настройки:" << endl;
+        cout << "0 - Меню" << endl;
         cout << "1 - Добавить аккаунт" << endl;
         cout << "2 - Удалить аккаунт" << endl;
         cout << ">> ";
         cin >> i;
 
-        if(i == 1)
+        if(i == 0)
+        {
+            main();
+        }
+        else if(i == 1)
         {
             ofstream fout("login.txt", ios_base::app);
             system("cls");
             string acc;
             cout << "Добавление аккаунта:" << endl;
-            cout << "Введите логин аккаунта:" << endl;
+            cout << "Введите логин аккаунта или 0(ноль) для возврата назад:" << endl;
+
             cout << ">> ";
             cin >> acc;
+
+            if(acc == "0")
+            {
+                main();
+            }
+
             if(!(fout << acc << endl))
             {
                 cout << "Ошибка добавления логина" << endl;
@@ -179,6 +191,8 @@ int main()
         {
             system("cls");
             cout << "Удаление аккаунта:" << endl;
+
+            cout << "0 - Меню" << endl;
 
             string acc;
             string delacc;
@@ -197,6 +211,11 @@ int main()
 
             cout << ">> ";
             cin >> accdel;
+
+            if (accdel == 0)
+            {
+                main();
+            }
 
             for(int j = 0; j < accdel; j++)
             {
