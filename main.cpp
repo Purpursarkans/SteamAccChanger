@@ -11,6 +11,7 @@ void killProcessByName(const char *filename);
 
 void KillSteam()
 {
+    //change to steam -shutdown
     killProcessByName("steam.exe");
 }
 void KillSteamExtreme()
