@@ -40,7 +40,7 @@
 		<Unit filename="SteamAkkChanger.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="SteamAccChanger.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
