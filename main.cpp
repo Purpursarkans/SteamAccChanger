@@ -12,6 +12,7 @@ void killProcessByName(const char *filename);
 void KillSteam()
 {
     //change to steam -shutdown
+    // https://developer.valvesoftware.com/wiki/Command_Line_Options#Steam_.28Windows.29
     killProcessByName("steam.exe");
 }
 void KillSteamExtreme()
