@@ -7,14 +7,16 @@
 
 using namespace std;
 
+string STEAM_PATH = "C:\\Program Files (x86)\\Steam\\Steam.exe";
+string STEAM_PATH_WORK = "\"" + STEAM_PATH + "\"";
 void killProcessByName(const char *filename);
 
 void KillSteam()
 {
-    //change to steam -shutdown
-    // https://developer.valvesoftware.com/wiki/Command_Line_Options#Steam_.28Windows.29
-    killProcessByName("steam.exe");
+    string steamShutdown = STEAM_PATH_WORK + " -shutdown";
+    system(steamShutdown.c_str());
 }
+
 void KillSteamExtreme()
 {
     killProcessByName("steam.exe");
@@ -283,13 +285,19 @@ int main()
         cout << "Найден запущенный стим" << endl;
         cout << "Завершение стима" << endl;
         KillSteam();
-
-        Sleep(3000);
+        Sleep(5000);
+        
+        if (GetProcessByExeName(L"steam.exe") != 0)
+        {
+            cout << "Повторная попытка закрытия стима" << endl;
+            KillSteam();
+            Sleep(5000);
+        }
 
         while((GetProcessByExeName(L"steam.exe") != 0) || (GetProcessByExeName(L"steamwebhelper.exe") != 0) || (GetProcessByExeName(L"SteamService.exe") != 0))
         {
 
-            cout << "Стим завершается слишком долго... Повторная попытка закрытия стима" << endl;
+            cout << "Стим завершается слишком долго... Экстренный способ закрытия стима" << endl;
             KillSteamExtreme();
             timerT++;
             if(timerT > 10)
@@ -302,8 +310,12 @@ int main()
         }
     }
 
-    cout << "Запуск стима из C:\\Program Files (x86)\\Steam (если стим находится не в этой папке, запуска не произойдет)" << endl;
-    system("start \"Steam.exe\" \"C:\\Program Files (x86)\\Steam\\Steam.exe\"");
+    cout << "Запуск стима из " << STEAM_PATH << " (если стим находится не в этой папке, запуска не произойдет)" << endl;
+
+    string steamStart;
+    steamStart = "start \"Steam.exe\" " + STEAM_PATH_WORK;
+    
+    system(steamStart.c_str());
     Sleep(3000);
     ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
     cout << "Консоль закроется через 3 секунды" << endl;
