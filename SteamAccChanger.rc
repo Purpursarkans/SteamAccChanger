@@ -1,0 +1,5 @@
+ico16 ICON "ico/steam16.ico"
+ico24 ICON "ico/steam24.ico"
+ico32 ICON "ico/steam32.ico"
+ico64 ICON "ico/steam64.ico"
+ico128 ICON "ico/steam128.ico"

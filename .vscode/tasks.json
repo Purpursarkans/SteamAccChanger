@@ -1,0 +1,53 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe сборка активного файла",
+            "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${fileDirname}\\SteamAccChanger.res",
+                "-static",
+                "-Os",
+                "-s"
+            ],
+            "options": {
+                "cwd": "C:\\msys64\\mingw64\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Задача создана отладчиком.",
+            "dependsOn": ["Сборка ресурсов"],
+        },
+        {
+            "type": "process",
+            "label": "Сборка ресурсов",
+            "command": "C:\\msys64\\mingw64\\bin\\windres.exe",
+            "args": [
+                "${fileDirname}\\SteamAccChanger.rc",
+                "-O",
+                "coff",
+                "-o",
+                "${fileDirname}\\SteamAccChanger.res"
+            ],
+            "options": {
+                "cwd": "C:\\msys64\\mingw64\\bin"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Задача по сборке ресурсов",
+        }
+    ],
+        
+    "version": "2.0.0"
+}
