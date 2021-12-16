@@ -49,51 +49,50 @@ void killProcessByName(const char *filename)
 
 DWORD GetProcessByExeName(wchar_t* ExeName)
 {
-PROCESSENTRY32W pe32;
-pe32.dwSize = sizeof(PROCESSENTRY32W);
+    PROCESSENTRY32W pe32;
+    pe32.dwSize = sizeof(PROCESSENTRY32W);
 
-HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
-if (hProcessSnap == INVALID_HANDLE_VALUE)
-{
-    MessageBoxW(NULL, L"Error CreateToolhelp32Snapshot", L"error", MB_OK);
-    return false;
-}
-
-if (Process32FirstW(hProcessSnap, &pe32))
-{
-    do
+    HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
+    if (hProcessSnap == INVALID_HANDLE_VALUE)
     {
-        if (_wcsicmp(pe32.szExeFile, ExeName) == 0)
+        MessageBoxW(NULL, L"Error CreateToolhelp32Snapshot", L"error", MB_OK);
+        return false;
+    }
+
+    if (Process32FirstW(hProcessSnap, &pe32))
+    {
+        do
         {
-            CloseHandle(hProcessSnap);
-            return pe32.th32ProcessID;
-        }
-    } while (Process32NextW(hProcessSnap, &pe32));
+            if (_wcsicmp(pe32.szExeFile, ExeName) == 0)
+            {
+                CloseHandle(hProcessSnap);
+                return pe32.th32ProcessID;
+            }
+        } while (Process32NextW(hProcessSnap, &pe32));
+    }
+
+    CloseHandle(hProcessSnap);
+    return 0;
 }
 
-CloseHandle(hProcessSnap);
-return 0;
-
-}
-
-int ChangeAcc(string szTestString_temp)
+int ChangeAcc(string inputAccountName)
 {
-    int n = szTestString_temp.length();
-    char szTestString[n + 1];
-    strcpy(szTestString, szTestString_temp.c_str());
+    int n = inputAccountName.length();
+    char workAccountName[n + 1];
+    strcpy(workAccountName, inputAccountName.c_str());
 
-    // Ключ который будем создавать
-    char szPath[] = ("Software\\Valve\\Steam");
+    // Путь к ветке реестра стима
+    char RegeditPathToSteam[] = ("Software\\Valve\\Steam");
 
     HKEY hKey;
 
     // Создаем ключ в ветке HKEY_CURRENT_USER
-    if((RegCreateKeyEx(HKEY_CURRENT_USER, szPath, 0, NULL, REG_OPTION_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))){
+    if((RegCreateKeyEx(HKEY_CURRENT_USER, RegeditPathToSteam, 0, NULL, REG_OPTION_VOLATILE, KEY_WRITE, NULL, &hKey, NULL))){
     cout << "При создании ключа произошла ошибка" << endl;
     return 1;
     }
-    // Пишем тестовую строку в созданный ключ
-    if(RegSetValueEx(hKey, "AutoLoginUser", 0, REG_SZ, (BYTE*)szTestString, sizeof(szTestString))){
+    // Пишем логин в созданный ключ
+    if(RegSetValueEx(hKey, "AutoLoginUser", 0, REG_SZ, (BYTE*)workAccountName, sizeof(workAccountName))){
     cout << "При записи строки произошла ошибка" << endl;
     return 2;
     }
@@ -107,7 +106,7 @@ int ChangeAcc(string szTestString_temp)
     char szBuf[MAX_PATH];
     DWORD dwBufLen = MAX_PATH;
 
-    if(RegGetValue(HKEY_CURRENT_USER, szPath, "AutoLoginUser", RRF_RT_REG_SZ, NULL, (BYTE*) szBuf, &dwBufLen) != ERROR_SUCCESS){
+    if(RegGetValue(HKEY_CURRENT_USER, RegeditPathToSteam, "AutoLoginUser", RRF_RT_REG_SZ, NULL, (BYTE*) szBuf, &dwBufLen) != ERROR_SUCCESS){
     cout << "При чтении строки произошла ошибка" << endl;
     return 4;
     }
@@ -278,8 +277,6 @@ int main()
     file.close();
     ChangeAcc(line);
 
-    int timerT = 0;
-
     if (GetProcessByExeName(L"steam.exe") != 0)
     {
         cout << "Найден запущенный стим" << endl;
@@ -299,13 +296,6 @@ int main()
 
             cout << "Стим завершается слишком долго... Экстренный способ закрытия стима" << endl;
             KillSteamExtreme();
-            timerT++;
-            if(timerT > 10)
-            {
-                cout << "Стим не может закрыться слишком долго, попробуйте закрыть его вручную.\nЕсли стим закрыт, но ничего не происходит - отставьте багрепорт с указанием незакрытых служб стима на\n>>> github.com/Purpursarkans/SteamAccChanger/issues" << endl << endl;
-                system("pause");
-                return 0;
-            }
             Sleep(1000);
         }
     }
