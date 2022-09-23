@@ -7,13 +7,17 @@
 
 using namespace std;
 
-string STEAM_PATH = "C:\\Program Files (x86)\\Steam\\Steam.exe";
-string STEAM_PATH_WORK = "\"" + STEAM_PATH + "\"";
+string STEAM_DEFAULT_PATH = "C:\\Program Files (x86)\\Steam\\Steam.exe";
+string STEAM_PATH;// = "D:\\soft\\Steam\\steam.exe";
+
+string STEAM_PATH_WORK;// = STEAM_PATH;
 void killProcessByName(const char *filename);
 
 void KillSteam()
 {
     string steamShutdown = STEAM_PATH_WORK + " -shutdown";
+    std::cout << steamShutdown << std::endl;
+    system("pause");
     system(steamShutdown.c_str());
 }
 
@@ -118,6 +122,33 @@ int main()
 {
     system("chcp 65001");
     system("cls || clear");
+
+    ifstream steamPathFileRead("steampath.txt"); // окрываем файл для чтения
+    if (!(steamPathFileRead.is_open()))
+    {
+        ofstream steamPathFileWrite("steampath.txt");
+        steamPathFileWrite << STEAM_DEFAULT_PATH << endl;
+        steamPathFileWrite.close();
+        STEAM_PATH = STEAM_DEFAULT_PATH;
+    }
+    else
+    {
+        getline(steamPathFileRead, STEAM_PATH);
+    }
+    if (STEAM_PATH == "" || STEAM_PATH == " ")
+    {
+        ofstream steamPathFileWrite("steampath.txt");
+        steamPathFileWrite << STEAM_DEFAULT_PATH << endl;
+        steamPathFileWrite.close();
+        STEAM_PATH = STEAM_DEFAULT_PATH;
+    }
+
+
+    steamPathFileRead.close();
+
+    std::cout << "Путь запуска стим: " << STEAM_PATH << " (если тут ничего нет, удалите файл steampath.txt)" << std::endl;
+
+    STEAM_PATH_WORK = STEAM_PATH;
 
     string line;
     ifstream file("login.txt"); // окрываем файл для чтения
@@ -306,6 +337,7 @@ int main()
     steamStart = "start \"Steam.exe\" " + STEAM_PATH_WORK;
     
     system(steamStart.c_str());
+
     Sleep(3000);
     ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
     cout << "Консоль закроется через 3 секунды" << endl;
