@@ -16,8 +16,6 @@ void killProcessByName(const char *filename);
 void KillSteam()
 {
     string steamShutdown = STEAM_PATH_WORK + " -shutdown";
-    std::cout << steamShutdown << std::endl;
-    system("pause");
     system(steamShutdown.c_str());
 }
 
