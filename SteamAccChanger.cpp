@@ -7,7 +7,7 @@
 
 using namespace std;
 
-string STEAM_DEFAULT_PATH = "C:\\Program Files (x86)\\Steam\\Steam.exe";
+string STEAM_DEFAULT_PATH = "\"C:\\Program Files (x86)\\Steam\\Steam.exe\"";
 string STEAM_PATH;// = "D:\\soft\\Steam\\steam.exe";
 
 string STEAM_PATH_WORK;// = STEAM_PATH;
